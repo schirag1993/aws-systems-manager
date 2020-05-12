@@ -115,7 +115,7 @@ class SSMTester(object):
         self.ssm_client.create_document(
             Content=self.doc_content,
             Name=self.doc_name,
-            DocumentType=self.doc_type
+            DocumentType=self.doc_type,
         )
         LOGGER.info('Verifying SSM document creation is complete')
         while self.ssm_client.describe_document(
