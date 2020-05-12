@@ -1,0 +1,15 @@
+{
+    "assumeRole": "{{ AutomationAssumeRole }}",
+    "description": "## Delete DynamoDB table\n\n### Steps\n\n**aws:executeScript**\n\nThis step uses boto3 to delete the target DynamoDB table\n\n### Input\n\n1. AutomationAssumeRole: The ARN of the role to assume when executing this document\n2. TableName: Name of the DynamoDB table to delete\n\n### Output\n\nOn successful execution, this document outputs the response of the [DeleteTable API] (https://docs.aws.amazon.com/amazondynamodb/latest/APIReference/API_DeleteTable.html)",
+    "mainSteps": [],
+    "parameters": {
+        "AutomationAssumeRole": {
+            "type": "String"
+        },
+        "TableName": {
+            "default": "n/a",
+            "type": "String"
+        }
+    },
+    "schemaVersion": "0.3"
+}
