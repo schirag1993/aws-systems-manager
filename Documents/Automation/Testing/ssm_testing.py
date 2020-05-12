@@ -99,7 +99,7 @@ class CFNTester(object):
 class SSMTester(object):
     """SSM document test class."""
 
-    def __init__(self, ssm_client, doc_filename, doc_name, doc_type):
+    def __init__(self, ssm_client, doc_filename, doc_name, doc_type, doc_format):
         """Create object variables."""
         self.ssm_client = ssm_client
         with open(doc_filename, 'r') as jsonfile:

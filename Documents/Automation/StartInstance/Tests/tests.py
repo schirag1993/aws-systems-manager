@@ -17,7 +17,7 @@
 #!/usr/bin/env python
 """Main test file for Start Instances SSM document."""
 
-import ConfigParser
+import configparser
 import glob
 import logging
 import os
@@ -39,7 +39,7 @@ sys.path.append(
 )
 import ssm_testing  # noqa pylint: disable=import-error,wrong-import-position
 
-CONFIG = ConfigParser.ConfigParser()
+CONFIG = configparser.ConfigParser()
 CONFIG.readfp(open(os.path.join(REPO_ROOT, 'Testing', 'defaults.cfg')))
 CONFIG.read([os.path.join(REPO_ROOT, 'Testing', 'local.cfg')])
 
@@ -168,4 +168,3 @@ class TestCase(unittest.TestCase):
 
 if __name__ == '__main__':
     unittest.main()
-

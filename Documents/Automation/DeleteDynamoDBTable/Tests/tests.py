@@ -40,7 +40,6 @@ CONFIG.read([os.path.join(REPO_ROOT, "Testing", "local.cfg")])
 
 REGION = CONFIG.get("general", "region")
 PREFIX = CONFIG.get("general", "resource_prefix")
-SERVICE_ROLE_NAME = CONFIG.get("general", "automation_service_role_name")
 SSM_DOC_NAME = PREFIX + "delete-dynamodb-table"
 INSTANCE_CFN_STACKNAME = PREFIX + "delete-dynamodb-table"
 
@@ -69,10 +68,11 @@ class TestCase(unittest.TestCase):
         ssm_doc = ssm_testing.SSMTester(
             ssm_client=ssm_client,
             doc_filename=os.path.join(
-                DOC_DIR, "Documents", "aws-DeleteDynamoDBTable.yaml"
+                DOC_DIR, "Documents", "aws-DeleteDynamoDBTable.json"
             ),
             doc_name=SSM_DOC_NAME,
             doc_type="Automation",
+            doc_format="YAML"
         )
 
         test_cf_stack = ssm_testing.CFNTester(
@@ -83,13 +83,6 @@ class TestCase(unittest.TestCase):
             stack_name=INSTANCE_CFN_STACKNAME,
         )
 
-        automation_role = ssm_doc.get_automation_role(
-            boto3.client("sts", region_name=REGION),
-            boto3.client("iam", region_name=REGION),
-            SERVICE_ROLE_NAME,
-        )
-
-        LOGGER.info("Starting instances for testing")
         test_cf_stack.create_stack(
             [
                 {
@@ -100,6 +93,12 @@ class TestCase(unittest.TestCase):
                 }
             ]
         )
+
+        automation_role = ssm_doc.get_automation_role(
+            boto3.client("sts", region_name=REGION),
+            boto3.client("iam", region_name=REGION),
+            test_cf_stack.stack_outputs["AutomationAssumeRoleName"],
+        )
         try:
             LOGGER.info("Creating automation document")
             self.assertEqual(ssm_doc.create_document(), "Active")
@@ -109,7 +108,7 @@ class TestCase(unittest.TestCase):
             )
             execution = ssm_doc.execute_automation(
                 params={
-                    "TableName": [dynamoDB_table_name],
+                    "TableName": dynamoDB_table_name,
                     "AutomationAssumeRole": [automation_role],
                 }
             )
@@ -121,6 +120,10 @@ class TestCase(unittest.TestCase):
                 ssm_doc.automation_execution_status(ssm_client, execution, False),
                 "Success",
             )
+        except Exception as e:
+            LOGGER.info('Something went wrong here')
+            LOGGER.info('type(e): {}'.format(type(e)))
+            raise
         finally:
             test_cf_stack.delete_stack()
             ssm_doc.destroy()
