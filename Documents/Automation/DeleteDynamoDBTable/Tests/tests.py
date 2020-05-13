@@ -108,7 +108,7 @@ class TestCase(unittest.TestCase):
             )
             execution = ssm_doc.execute_automation(
                 params={
-                    "TableName": dynamoDB_table_name,
+                    "TableName": [dynamoDB_table_name],
                     "AutomationAssumeRole": [automation_role],
                 }
             )
